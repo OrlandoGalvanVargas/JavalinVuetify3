@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>iDATWeb</title>
+    <link rel="shortcut icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="/webjars/roboto-fontface/0.10.0/css/roboto/roboto-fontface.css">
+    <link rel="stylesheet" href="/webjars/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="/webjars/vuetify/3.7.0/dist/vuetify.min.css">
+    <!-- Agrega esta línea para los iconos de Material Design -->
+    <link rel="stylesheet" href="/webjars/mdi__font/7.2.96/css/materialdesignicons.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+
+    <script src="/webjars/vue/3.5.4/dist/vue.global.js"></script>
+    <script src="/webjars/vuetify/3.7.0/dist/vuetify.min.js"></script>
+    <link rel="stylesheet" href="/webjars/vuetify/3.7.0/dist/vuetify.min.css">
+    <link rel="stylesheet" href="/webjars/roboto-fontface/0.10.0/css/roboto/roboto-fontface.css">
+    <link rel="stylesheet" href="/webjars/mdi__font/7.2.96/css/materialdesignicons.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <!-- Vuetify CSS (si no usas módulos) -->
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="/webjars/vue/3.5.4/dist/vue.global.prod.js"></script>
+    <script src="/webjars/vuetify/3.7.0/dist/vuetify.min.js"></script>
+    <script>
+        const vuetify = Vuetify.createVuetify({
+            theme: {
+                themes: {
+                    light: {
+                        colors: {
+                            background: '#F5F5F5',
+                            primary: '#7986CB',
+                            secondary: '#9575CD'
+                        }
+                    },
+                    dark: {
+                        colors: {
+                            background: '#000000',
+                            primary: '#7986CB',
+                            secondary: '#9575CD'
+                        }
+                    },
+                },
+            },
+        })
+        const app = Vue.createApp({})
+    </script>
+    @componentRegistration
+</head>
+<body>
+<main id="main-vue" v-cloak>
+    @routeComponent
+</main>
+<script type="module">
+    app.use(vuetify).mount("#main-vue");
+</script>
+</body>
+</html>
