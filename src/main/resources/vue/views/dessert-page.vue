@@ -1,34 +1,14 @@
 <template id="dessert-page">
   <app-frame>
-  <v-data-table
-      :headers="headers"
-      :items="desserts"
-      sort-by="calories"
-      class="elevation-1"
-  >
+  <v-data-table :headers="dessert.headers" :items="dessert.items">
     <template v-slot:top>
-      <v-toolbar
-          flat
-      >
+      <v-toolbar flat>
         <v-toolbar-title>My CRUD</v-toolbar-title>
-        <v-divider
-            class="mx-4"
-            inset
-            vertical
-        ></v-divider>
+        <v-divider class="mx-4" inset vertical></v-divider>
         <v-spacer></v-spacer>
-        <v-dialog
-            v-model="dialog"
-            max-width="500px"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-                color="primary"
-                dark
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-            >
+        <v-dialog v-model="dessert.dialog" max-width="500px">
+          <template v-slot:activator="{ props }">
+            <v-btn dark class="mb-2" v-bind="props">
               New Item
             </v-btn>
           </template>
@@ -40,55 +20,20 @@
             <v-card-text>
               <v-container>
                 <v-row>
-                  <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                  >
-                    <v-text-field
-                        v-model="editedItem.name"
-                        label="Dessert name"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="dessert.editedItem.name" label="Dessert name"></v-text-field>
                   </v-col>
-                  <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                  >
-                    <v-text-field
-                        v-model="editedItem.calories"
-                        label="Calories"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="dessert.editedItem.calories" label="Calories"></v-text-field>
                   </v-col>
-                  <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                  >
-                    <v-text-field
-                        v-model="editedItem.fat"
-                        label="Fat (g)"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="dessert.editedItem.fat" label="Fat (g)"></v-text-field>
                   </v-col>
-                  <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                  >
-                    <v-text-field
-                        v-model="editedItem.carbs"
-                        label="Carbs (g)"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="dessert.editedItem.carbs" label="Carbs (g)"></v-text-field>
                   </v-col>
-                  <v-col
-                      cols="12"
-                      sm="6"
-                      md="4"
-                  >
-                    <v-text-field
-                        v-model="editedItem.protein"
-                        label="Protein (g)"
-                    ></v-text-field>
+                  <v-col cols="12" sm="6" md="4">
+                    <v-text-field v-model="dessert.editedItem.protein" label="Protein (g)"></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -96,30 +41,22 @@
 
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="close"
-              >
+              <v-btn color="blue darken-1" variant="text" @click="close">
                 Cancel
               </v-btn>
-              <v-btn
-                  color="blue darken-1"
-                  text
-                  @click="save"
-              >
+              <v-btn color="blue darken-1" variant="text" @click="save">
                 Save
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px">
+        <v-dialog v-model="dessert.dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="deleteItemConfirm">OK</v-btn>
+              <v-btn color="blue darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+              <v-btn color="blue darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -127,203 +64,124 @@
       </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon
-          small
-          class="mr-2"
-          @click="editItem(item)"
-      >
+      <v-icon size="small" class="me-2" @click="editItem(item)">
         mdi-pencil
       </v-icon>
-      <v-icon
-          small
-          @click="deleteItem(item)"
-      >
+      <v-icon size="small" @click="deleteItem(item)">
         mdi-delete
       </v-icon>
     </template>
     <template v-slot:no-data>
-      <v-btn
-          color="primary"
-          @click="initialize"
-      >
+      <v-btn color="primary" @click="initialize">
         Reset
       </v-btn>
     </template>
   </v-data-table>
     </app-frame>
 </template>
+
 <script>
 app.component("dessert-page", {
   template: "#dessert-page",
   data: () => ({
-    dialog: false,
-    dialogDelete: false,
-    headers: [
-      {
-        title: 'Dessert (100g serving)',
-        align: 'start',
-        sortable: false,
-        key: 'name',
-      },
-      { title: 'Calories', key: 'calories' },
-      { title: 'Fat (g)', key: 'fat' },
-      { title: 'Carbs (g)', key: 'carbs' },
-      { title: 'Protein (g)', key: 'protein' },
-      { title: 'Actions', key: 'actions', sortable: false },
-    ],
-    desserts: [],
-    editedIndex: -1,
-    editedItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
-    defaultItem: {
-      name: '',
-      calories: 0,
-      fat: 0,
-      carbs: 0,
-      protein: 0,
-    },
+    dessert: {
+      dialog: false,
+      dialogDelete: false,
+      headers: [
+        { title: 'Dessert (100g serving)', align: 'start', sortable: false, key: 'name' },
+        { title: 'Calories', key: 'calories' },
+        { title: 'Fat (g)', key: 'fat' },
+        { title: 'Carbs (g)', key: 'carbs' },
+        { title: 'Protein (g)', key: 'protein' },
+        { title: 'Actions', key: 'actions', sortable: false },
+      ],
+      items: [],
+      editedIndex: -1,
+      editedItem: { id: "", name: '', calories: 0, fat: 0, carbs: 0, protein: 0 },
+      defaultItem: { id: "", name: '', calories: 0, fat: 0, carbs: 0, protein: 0 },
+    }
   }),
 
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
+      return this.dessert.editedIndex == -1 ? 'New Item' : 'Edit Item'
     },
   },
 
   watch: {
-    dialog (val) {
+    dialog(val) {
       val || this.close()
     },
-    dialogDelete (val) {
+    dialogDelete(val) {
       val || this.closeDelete()
     },
   },
 
-  created () {
+  created() {
     this.initialize()
   },
 
   methods: {
-    initialize () {
-      this.desserts = [
-        {
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-        },
-        {
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-        },
-        {
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-        },
-        {
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-        },
-        {
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-        },
-        {
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-        },
-        {
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-        },
-        {
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-        },
-        {
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-        },
-        {
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-        },
-      ]
+    initialize() {
+      this.$fetch('api/desserts')
+          .then(response => this.dessert.items = response)
+          .catch(error => this.$toast.fire({ icon: "error", title: error }))
     },
 
-    editItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
+    editItem(item) {
+      this.$fetch(`api/desserts/${item.id}`)
+          .then(response => {
+            this.dessert.editedIndex = this.dessert.items.indexOf(item)
+            this.dessert.editedItem = Object.assign({}, response)
+            this.dessert.dialog = true
+          })
     },
 
-    deleteItem (item) {
-      this.editedIndex = this.desserts.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
+    deleteItem(item) {
+      this.dessert.editedIndex = this.dessert.items.indexOf(item)
+      this.dessert.editedItem = Object.assign({}, item)
+      this.dessert.dialogDelete = true
     },
 
     deleteItemConfirm () {
-      this.desserts.splice(this.editedIndex, 1)
+      this.dessert.items.splice(this.dessert.editedIndex, 1)
       this.closeDelete()
     },
 
     close () {
-      this.dialog = false
+      this.dessert.dialog = false
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
+        this.dessert.editedItem = Object.assign({}, this.dessert.defaultItem)
+        this.dessert.editedIndex = -1
       })
     },
 
     closeDelete () {
-      this.dialogDelete = false
+      this.dessert.dialogDelete = false
       this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
+        this.dessert.editedItem = Object.assign({}, this.dessert.defaultItem)
+        this.dessert.editedIndex = -1
       })
     },
 
     save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.desserts[this.editedIndex], this.editedItem)
+      const editing = this.dessert.editedIndex > -1
+      const dessert = this.dessert.editedItem
+      if (editing){
+        this.$fetch(`api/desserts/${dessert.id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(dessert)
+        })
+            .then(response => {
+              if (response === 'success'){
+              Object.assign(this.dessert.items[this.dessert.editedIndex], dessert)
+            }
+              this.close()
+
+            })
       } else {
-        this.desserts.push(this.editedItem)
+        this.dessert.items.push(this.dessert.editedItem)
       }
-      this.close()
     },
   },
 })

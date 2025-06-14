@@ -16,7 +16,7 @@
         <v-list-item prepend-icon="mdi-star" title="Popular Mice" value="popular" @click="$router('/popular-mice')"></v-list-item>
         <v-list-item prepend-icon="mdi-controller-classic" title="Gaming" value="gaming" @click="$router('/gaming')"></v-list-item>
         <v-list-item prepend-icon="mdi-book-open-variant" title="Books" value="books" @click="$router('/books')"></v-list-item>
-        <v-list-item prepend-icon="mdi-cupcake" title="Table Desserts" value="dessert-page" @click="$router('/dessert-page')"></v-list-item>
+        <v-list-item prepend-icon="mdi-cupcake" title="Table Desserts" value="dessert-page" @click="$router('/dessert')"></v-list-item>
         <v-list-item prepend-icon="mdi-cupcake" title="Table Desserts" value="dessert-page" @click="$router('/form-page')"></v-list-item>
       </v-list>
     </v-navigation-drawer>
