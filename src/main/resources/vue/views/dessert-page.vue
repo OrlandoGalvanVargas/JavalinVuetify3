@@ -44,7 +44,7 @@
               <v-btn color="blue darken-1" variant="text" @click="close">
                 Cancel
               </v-btn>
-              <v-btn color="blue darken-1" variant="text" @click="save">
+              <v-btn color="blue darken-1" variant="text" @click="save" :disabled="loading">
                 Save
               </v-btn>
             </v-card-actions>
@@ -84,6 +84,7 @@
 app.component("dessert-page", {
   template: "#dessert-page",
   data: () => ({
+    loading: false,
     dessert: {
       dialog: false,
       dialogDelete: false,
@@ -103,38 +104,43 @@ app.component("dessert-page", {
   }),
 
   computed: {
-    formTitle () {
+    formTitle() {
       return this.dessert.editedIndex == -1 ? 'New Item' : 'Edit Item'
     },
   },
 
   watch: {
-    dialog(val) {
+    'dessert.dialog'(val) {
       val || this.close()
     },
-    dialogDelete(val) {
+    'dessert.dialogDelete'(val) {
       val || this.closeDelete()
     },
   },
 
   created() {
-    this.initialize()
+      this.initialize()
   },
 
   methods: {
     initialize() {
+      this.loading = true
       this.$fetch('api/desserts')
           .then(response => this.dessert.items = response)
-          .catch(error => this.$toast.fire({ icon: "error", title: error }))
+          .catch(error => this.$toast.fire({ icon: "error", title: "Failed to load desserts" }))
+          .finally(() => this.loading = false)
     },
 
     editItem(item) {
+      this.loading = true
       this.$fetch(`api/desserts/${item.id}`)
           .then(response => {
             this.dessert.editedIndex = this.dessert.items.indexOf(item)
             this.dessert.editedItem = Object.assign({}, response)
             this.dessert.dialog = true
           })
+          .catch(error => this.$toast.fire({ icon: "error", title: "Failed to load dessert" }))
+          .finally(() => this.loading = false)
     },
 
     deleteItem(item) {
@@ -143,20 +149,33 @@ app.component("dessert-page", {
       this.dessert.dialogDelete = true
     },
 
-    deleteItemConfirm () {
-      this.dessert.items.splice(this.dessert.editedIndex, 1)
-      this.closeDelete()
+    async deleteItemConfirm() {
+      this.loading = true
+      try {
+        const response = await this.$fetch(`api/desserts/${this.dessert.editedItem.id}`, {
+          method: 'DELETE'
+        })
+        if (response === 'success') {
+          this.dessert.items.splice(this.dessert.editedIndex, 1)
+          this.$toast.fire({ icon: "success", title: "Dessert deleted" })
+        }
+      } catch (error) {
+        this.$toast.fire({ icon: "error", title: "Failed to delete dessert" })
+      } finally {
+        this.loading = false
+        this.closeDelete()
+      }
     },
 
-    close () {
-      this.dessert.dialog = false
+    close() {
+      this.dessert.dialog = false  // Cierra el modal
       this.$nextTick(() => {
         this.dessert.editedItem = Object.assign({}, this.dessert.defaultItem)
         this.dessert.editedIndex = -1
       })
     },
 
-    closeDelete () {
+    closeDelete() {
       this.dessert.dialogDelete = false
       this.$nextTick(() => {
         this.dessert.editedItem = Object.assign({}, this.dessert.defaultItem)
@@ -164,25 +183,46 @@ app.component("dessert-page", {
       })
     },
 
-    save () {
+    async save() {
+      // Validación básica
+      if (!this.dessert.editedItem.name || this.dessert.editedItem.name.length < 2) {
+        this.$toast.fire({ icon: "warning", title: "Name must be at least 2 characters" })
+        return
+      }
+
+      this.loading = true
       const editing = this.dessert.editedIndex > -1
       const dessert = this.dessert.editedItem
-      if (editing){
-        this.$fetch(`api/desserts/${dessert.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify(dessert)
-        })
-            .then(response => {
-              if (response === 'success'){
-              Object.assign(this.dessert.items[this.dessert.editedIndex], dessert)
-            }
-              this.close()
 
-            })
-      } else {
-        this.dessert.items.push(this.dessert.editedItem)
+      try {
+        if (editing) {
+          const response = await this.$fetch(`api/desserts/${dessert.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(dessert)
+          })
+          this.close()
+          if (response === 'success') {
+            Object.assign(this.dessert.items[this.dessert.editedIndex], dessert)
+            this.$toast.fire({ icon: "success", title: "Dessert updated" })
+            this.close()
+          }
+        } else {
+          const response = await this.$fetch('api/desserts', {
+            method: 'POST',
+            body: JSON.stringify(dessert)
+          })
+          this.dessert.items.push({...dessert, id: response})
+          this.$toast.fire({ icon: "success", title: "Dessert created" })
+          this.close()
+        }
+        this.close()
+      } catch (error) {
+        this.$toast.fire({ icon: "error", title: "Operation failed", text: error.message })
+      } finally {
+        this.loading = false
+        this.close()
       }
-    },
-  },
+    }
+  }
 })
 </script>

@@ -26,10 +26,10 @@ dependencies {
     implementation("org.webjars.npm:roboto-fontface:0.10.0")
     // https://mvnrepository.com/artifact/org.webjars.npm/vuetify
     implementation("org.webjars.npm:sweetalert2:11.11.1")
+
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.firebirdsql.jdbc:jaybird:5.0.5.java11")
     implementation("com.github.seratch:kotliquery:1.9.0")
-
 }
 
 tasks.test {

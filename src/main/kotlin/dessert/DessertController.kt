@@ -17,12 +17,6 @@ object DessertController : CrudHandler {
         }
     }
 
-    override fun delete(ctx: Context, resourceId: String) {
-        ctx.future {
-            supplyAsync { DessertService.delete(resourceId) }.thenAccept ( ctx::result)
-        }
-    }
-
     override fun getAll(ctx: Context) {
         ctx.future {
             supplyAsync { DessertService.selectAll() }.thenAccept (ctx::json)
@@ -41,7 +35,12 @@ object DessertController : CrudHandler {
                 supplyAsync { DessertService.update(dessert)}.thenAccept (ctx::result)
             }
         }
+    }
 
+    override fun delete(ctx: Context, resourceId: String) {
+        ctx.future {
+            supplyAsync { DessertService.delete(resourceId) }.thenAccept ( ctx::result)
+        }
     }
 
 }
